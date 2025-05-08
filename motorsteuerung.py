@@ -9,7 +9,7 @@ mrbwd = 12
 
 def setup():
     GPIO.setmode(GPIO.BCM)
-    GPIO.setup(enable, GPIO.OUt)
+    GPIO.setup(enable, GPIO.OUT)
     GPIO.setup(mlfwd, GPIO.OUT)
     GPIO.setup(mlbwd, GPIO.OUT)
     GPIO.setup(mrfwd, GPIO.OUT)
@@ -118,7 +118,7 @@ def right():
     GPIO.output(mlfwd, GPIO.HIGH)
     GPIO.output(mlbwd, GPIO.LOW)
     GPIO.output(mrfwd, GPIO.LOW)
-    GPIO.output(mrbwd, GPIO.HOGH)
+    GPIO.output(mrbwd, GPIO.HIGH)
     sleep(0.5)
     print()
     print("mlfwd off")
