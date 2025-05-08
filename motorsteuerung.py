@@ -23,7 +23,7 @@ def main():
     setup()
     
     mlfwd_pwm = GPIO.PWM(mlfwd, frequency)
-    mlbawd_pwm = GPIO.PWM(mlbwd, frequency)
+    mlbwd_pwm = GPIO.PWM(mlbwd, frequency)
     mrfwd_pwm = GPIO.PWM(mrfwd, frequency)
     mrbwd_pwm = GPIO.PWM(mrbwd, frequency)
     
@@ -41,13 +41,13 @@ def main():
         elif user_input == "clear":
             print("\033c")
         elif user_input == "fwd":
-            fwd(mlbawd_pwm)
+            drive(mlfwd_pwm, mrfwd_pwm)
         elif user_input == "bwd":
-            bwd()
+            drive(mlbwd_pwm, mrbwd_pwm)
         elif user_input == "left":
-            left()
+            pass
         elif user_input == "right":
-            right()
+            pass
         elif user_input == "changeSpeed":
             speed = int(input("Enter new speed: "))
             print(f"Speed changed to {speed}")
@@ -55,34 +55,30 @@ def main():
             print("Unknown command. Type 'help' or '?' to show availeble commands.")
     exiting()
 
-def fwd(pwm: GPIO.PWM):
+def drive(pwmL: GPIO.PWM, pwmR: GPIO.PWM):
+    GPIO.output(enable, GPIO.HIGH)
     tmpSpeed = 0
-    pwm.start(tmpSpeed)
+    pwmL.start(tmpSpeed)
+    pwmR.start(tmpSpeed)
     
     for i in range(tmpSpeed, speed + 1):
         currentSpeed = i
-        pwm.ChangeDutyCycle(currentSpeed)
-        print("Der aktuelle Spannung am GPIO-Pin 20 beträgt:", 3.3*(tmpSpeed/100))
+        pwmL.ChangeDutyCycle(currentSpeed)
+        pwmR.ChangeDutyCycle(currentSpeed)
+        print("Der aktuelle Spannung am GPIO-Pin 20 beträgt:", 3.3*(currentSpeed/100))
         sleep(0.1)
         
-    sleep(0.5)
+    sleep(2)
     
     for i in range(currentSpeed, 0, -1):
         currentSpeed = i
-        pwm.ChangeDutyCycle(currentSpeed)
-        print("Der aktuelle Spannung am GPIO-Pin 20 beträgt:", 3.3*(tmpSpeed/100))
+        pwmL.ChangeDutyCycle(currentSpeed)
+        pwmR.ChangeDutyCycle(currentSpeed)
+        print("Der aktuelle Spannung am GPIO-Pin 20 beträgt:", 3.3*(currentSpeed/100))
         sleep(0.1)
         
-    pwm.stop()
-
-def bwd(pwm):
-    pass
-
-def left(pwm):
-    pass
-
-def right(pwm):
-    pass
+    pwmL.stop()
+    pwmR.stop()
 
 def exiting():
     GPIO.output(enable, GPIO.LOW)
