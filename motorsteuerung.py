@@ -7,6 +7,9 @@ mlbwd = 21
 mrfwd = 1
 mrbwd = 12
 
+speed = 100
+frequency = 50
+
 def setup():
     GPIO.setmode(GPIO.BCM)
     GPIO.setup(enable, GPIO.OUT)
@@ -18,6 +21,12 @@ def setup():
 
 def main():
     setup()
+    
+    mlfwd_pwm = GPIO.PWM(mlfwd, frequency)
+    mlbawd_pwm = GPIO.PWM(mlbwd, frequency)
+    mrfwd_pwm = GPIO.PWM(mrfwd, frequency)
+    mrbwd_pwm = GPIO.PWM(mrbwd, frequency)
+    
     user_input = ""
     print("\033c")
     while True:
@@ -32,104 +41,48 @@ def main():
         elif user_input == "clear":
             print("\033c")
         elif user_input == "fwd":
-            fwd()
+            fwd(mlbawd_pwm)
         elif user_input == "bwd":
             bwd()
         elif user_input == "left":
             left()
         elif user_input == "right":
             right()
+        elif user_input == "changeSpeed":
+            speed = int(input("Enter new speed: "))
+            print(f"Speed changed to {speed}")
         else:
             print("Unknown command. Type 'help' or '?' to show availeble commands.")
     exiting()
 
-def fwd():
-    print("mlfwd on")
-    print("mlbwd off")
-    print("mrfwd on")
-    print("mrbwd off")
-    GPIO.output(enable, GPIO.HIGH)
-    GPIO.output(mlfwd, GPIO.HIGH)
-    GPIO.output(mlbwd, GPIO.LOW)
-    GPIO.output(mrfwd, GPIO.HIGH)
-    GPIO.output(mrbwd, GPIO.LOW)
+def fwd(pwm: GPIO.PWM):
+    tmpSpeed = 0
+    pwm.start(tmpSpeed)
+    
+    for i in range(tmpSpeed, speed + 1):
+        currentSpeed = i
+        pwm.ChangeDutyCycle(currentSpeed)
+        print("Der aktuelle Spannung am GPIO-Pin 20 beträgt:", 3.3*(tmpSpeed/100))
+        sleep(0.1)
+        
     sleep(0.5)
-    print()
-    print("mlfwd off")
-    print("mlbwd off")
-    print("mrfwd off")
-    print("mrbwd off")
-    GPIO.output(enable, GPIO.LOW)
-    GPIO.output(mlfwd, GPIO.LOW)
-    GPIO.output(mlbwd, GPIO.LOW)
-    GPIO.output(mrfwd, GPIO.LOW)
-    GPIO.output(mrbwd, GPIO.LOW)
+    
+    for i in range(currentSpeed, 0, -1):
+        currentSpeed = i
+        pwm.ChangeDutyCycle(currentSpeed)
+        print("Der aktuelle Spannung am GPIO-Pin 20 beträgt:", 3.3*(tmpSpeed/100))
+        sleep(0.1)
+        
+    pwm.stop()
 
-def bwd():
-    print("mlfwd off")
-    print("mlbwd on")
-    print("mrfwd off")
-    print("mrbwd on")
-    GPIO.output(enable, GPIO.HIGH)
-    GPIO.output(mlfwd, GPIO.LOW)
-    GPIO.output(mlbwd, GPIO.HIGH)
-    GPIO.output(mrfwd, GPIO.LOW)
-    GPIO.output(mrbwd, GPIO.HIGH)
-    sleep(0.5)
-    print()
-    print("mlfwd off")
-    print("mlbwd off")
-    print("mrfwd off")
-    print("mrbwd off")
-    GPIO.output(enable, GPIO.LOW)
-    GPIO.output(mlfwd, GPIO.LOW)
-    GPIO.output(mlbwd, GPIO.LOW)
-    GPIO.output(mrfwd, GPIO.LOW)
-    GPIO.output(mrbwd, GPIO.LOW)
+def bwd(pwm):
+    pass
 
-def left():
-    print("mlfwd off")
-    print("mlbwd on")
-    print("mrfwd on")
-    print("mrbwd off")
-    GPIO.output(enable, GPIO.HIGH)
-    GPIO.output(mlfwd, GPIO.LOW)
-    GPIO.output(mlbwd, GPIO.HIGH)
-    GPIO.output(mrfwd, GPIO.HIGH)
-    GPIO.output(mrbwd, GPIO.LOW)
-    sleep(0.5)
-    print()
-    print("mlfwd off")
-    print("mlbwd off")
-    print("mrfwd off")
-    print("mrbwd off")
-    GPIO.output(enable, GPIO.LOW)
-    GPIO.output(mlfwd, GPIO.LOW)
-    GPIO.output(mlbwd, GPIO.LOW)
-    GPIO.output(mrfwd, GPIO.LOW)
-    GPIO.output(mrbwd, GPIO.LOW)
+def left(pwm):
+    pass
 
-def right():
-    print("mlfwd on")
-    print("mlbwd off")
-    print("mrfwd off")
-    print("mrbwd on")
-    GPIO.output(enable, GPIO.HIGH)
-    GPIO.output(mlfwd, GPIO.HIGH)
-    GPIO.output(mlbwd, GPIO.LOW)
-    GPIO.output(mrfwd, GPIO.LOW)
-    GPIO.output(mrbwd, GPIO.HIGH)
-    sleep(0.5)
-    print()
-    print("mlfwd off")
-    print("mlbwd off")
-    print("mrfwd off")
-    print("mrbwd off")
-    GPIO.output(enable, GPIO.LOW)
-    GPIO.output(mlfwd, GPIO.LOW)
-    GPIO.output(mlbwd, GPIO.LOW)
-    GPIO.output(mrfwd, GPIO.LOW)
-    GPIO.output(mrbwd, GPIO.LOW)
+def right(pwm):
+    pass
 
 def exiting():
     GPIO.output(enable, GPIO.LOW)
@@ -137,8 +90,7 @@ def exiting():
     GPIO.output(mlbwd, GPIO.LOW)
     GPIO.output(mrfwd, GPIO.LOW)
     GPIO.output(mrbwd, GPIO.LOW)
-    print()
-    print("exiting...")
+    print("\nexiting...")
 
 try:
     if __name__ == "__main__":
