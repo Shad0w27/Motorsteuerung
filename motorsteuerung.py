@@ -70,7 +70,7 @@ def drive(pwmL: GPIO.PWM, pwmR: GPIO.PWM):
         
     sleep(2)
     
-    for i in range(currentSpeed, 0, -1):
+    for i in range(speed, 0, -1):
         currentSpeed = i
         pwmL.ChangeDutyCycle(currentSpeed)
         pwmR.ChangeDutyCycle(currentSpeed)
