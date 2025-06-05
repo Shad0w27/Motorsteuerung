@@ -1,10 +1,8 @@
-from gpiozero import DistanceSensor, LED
+from gpiozero import DistanceSensor
+from time import sleep
 
-redLed = LED(1)
-distanceSensor = DistanceSensor(10, 11, max_distance=1)
+distanceSensor = DistanceSensor(23, 24)  # Trigger pin 23, Echo pin 24
 
 while True:
-    if distanceSensor.distance <= 0.04:
-        redLed.on()
-    else:
-        redLed.off()
+    print("Distance: ", distanceSensor.distance * 100, "cm")
+    sleep(1)  # Delay for 1 second before the next reading
